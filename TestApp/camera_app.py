@@ -21,7 +21,7 @@ class CameraApp(QtWidgets.QWidget):
         self.btn_stop = QtWidgets.QPushButton("Camera Off")
 
         # 서버 URL
-        self.server_url = "ws://127.0.0.1:5000/upload"
+        self.server_url = "ws://localhost:5000/upload"
 
         hbox = QtWidgets.QHBoxLayout()  # 수평 상자 레이아웃 생성
         hbox.addWidget(self.label_original)
@@ -70,60 +70,60 @@ class CameraApp(QtWidgets.QWidget):
                         response_data = json.loads(response)
                     except:
                         print("websocket.recv() 실패")
-                    
-                    if response_data.get("status") == "processing":
-                    
-                        processed_image_hex = response_data.get("processed_image", "")
+                    try:
+                        if response_data.get("status") == "processing":
+                        
+                            processed_image_hex = response_data.get("processed_image", "")
 
-                        # 화면에 개선된 프레임 표시
-                        frameSR = self.decode_image(processed_image_hex)
+                            # 화면에 개선된 프레임 표시
+                            frameSR = self.decode_image(processed_image_hex)
 
-                        original = cv2.resize(img_original, (1200, 900))
-                        frameSR = cv2.resize(frameSR, (1200, 900))
+                            original = cv2.resize(img_original, (1200, 900))
+                            frameSR = cv2.resize(frameSR, (1200, 900))
 
-                        cv2.putText(
-                            frameSR,
-                            "Processed Frame",
-                            (10, 30),  # 텍스트 시작 위치 (x, y)
-                            cv2.FONT_HERSHEY_SIMPLEX,
-                            1,  # 폰트 크기
-                            (255, 255, 255),  # 텍스트 색상 (BGR 형식)
-                            2,  # 두께
-                            cv2.LINE_AA,  # 안티앨리어싱
-                        )
-                        h_proc, w_proc, c_proc = frameSR.shape
-                        qImg_proc = QtGui.QImage(
-                            frameSR.data,
-                            w_proc,
-                            h_proc,
-                            w_proc * c_proc,
-                            QtGui.QImage.Format_RGB888,
-                        )
-                        pixmap_proc = QtGui.QPixmap.fromImage(qImg_proc)
-                        self.label_processed.setPixmap(pixmap_proc)
+                            cv2.putText(
+                                frameSR,
+                                "Processed Frame",
+                                (10, 30),  # 텍스트 시작 위치 (x, y)
+                                cv2.FONT_HERSHEY_SIMPLEX,
+                                1,  # 폰트 크기
+                                (255, 255, 255),  # 텍스트 색상 (BGR 형식)
+                                2,  # 두께
+                                cv2.LINE_AA,  # 안티앨리어싱
+                            )
+                            h_proc, w_proc, c_proc = frameSR.shape
+                            qImg_proc = QtGui.QImage(
+                                frameSR.data,
+                                w_proc,
+                                h_proc,
+                                w_proc * c_proc,
+                                QtGui.QImage.Format_RGB888,
+                            )
+                            pixmap_proc = QtGui.QPixmap.fromImage(qImg_proc)
+                            self.label_processed.setPixmap(pixmap_proc)
 
-                        # 화면에 기존 프레임 표시
-                        cv2.putText(
-                            original,
-                            "Original Frame",
-                            (10, 30),  # 텍스트 시작 위치 (x, y)
-                            cv2.FONT_HERSHEY_SIMPLEX,
-                            1,  # 폰트 크기
-                            (255, 255, 255),  # 텍스트 색상 (BGR 형식)
-                            2,  # 두께
-                            cv2.LINE_AA,  # 안티앨리어싱
-                        )
-                        h_orig, w_orig, c_orig = original.shape
-                        qImg_orig = QtGui.QImage(
-                            original.data,
-                            w_orig,
-                            h_orig,
-                            w_orig * c_orig,
-                            QtGui.QImage.Format_RGB888,
-                        )
-                        pixmap_orig = QtGui.QPixmap.fromImage(qImg_orig)
-                        self.label_original.setPixmap(pixmap_orig)
-                    else:
+                            # 화면에 기존 프레임 표시
+                            cv2.putText(
+                                original,
+                                "Original Frame",
+                                (10, 30),  # 텍스트 시작 위치 (x, y)
+                                cv2.FONT_HERSHEY_SIMPLEX,
+                                1,  # 폰트 크기
+                                (255, 255, 255),  # 텍스트 색상 (BGR 형식)
+                                2,  # 두께
+                                cv2.LINE_AA,  # 안티앨리어싱
+                            )
+                            h_orig, w_orig, c_orig = original.shape
+                            qImg_orig = QtGui.QImage(
+                                original.data,
+                                w_orig,
+                                h_orig,
+                                w_orig * c_orig,
+                                QtGui.QImage.Format_RGB888,
+                            )
+                            pixmap_orig = QtGui.QPixmap.fromImage(qImg_orig)
+                            self.label_original.setPixmap(pixmap_orig)
+                    except:
                         print("Frame skipped or processing failed")
 
                 else:
